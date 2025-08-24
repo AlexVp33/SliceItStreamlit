@@ -29,11 +29,13 @@ if uploaded_file is not None:
     upper = np.array([180, 255, 255])
     mask = cv2.inRange(hsv, lower, upper)
 
-    # Suavizar y limpiar bordes
+    # Rellenar huecos y suavizar
     mask = cv2.medianBlur(mask, 5)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((5,5), np.uint8))
-
-    # Detectar contornos
+    kernel = np.ones((7,7), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)  # Cierra grietas internas
+    mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel) # Engrosa el contorno exterior
+    
+    # Detectar solo contorno externo
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contours:
         st.error("No se detectó ninguna comida con los parámetros actuales. Ajusta los sliders.")
@@ -60,7 +62,7 @@ if uploaded_file is not None:
             y = int(cy + r*math.sin(angle))
             if x < 0 or x >= width or y < 0 or y >= height:
                 break
-            if mask[y, x] == 0:
+            if mask[y, x] == 0:  # Detener al borde exterior
                 break
         cv2.line(img, (cx, cy), (x, y), (255,0,0), 2)
 
