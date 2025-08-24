@@ -20,7 +20,7 @@ if uploaded_file is not None:
     # Convertir a HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    # Sliders para ajustar el rango de segmentación
+    # Sliders para ajustar rango de segmentación
     st.sidebar.header("Ajustes de segmentación")
     low_s = st.sidebar.slider("Saturación mínima", 0, 255, 40)
     low_v = st.sidebar.slider("Valor mínimo (brillo)", 0, 255, 40)
@@ -64,11 +64,12 @@ if uploaded_file is not None:
                 break
         cv2.line(img, (cx, cy), (x, y), (255,0,0), 2)
 
-    # Dibujar contorno principal
+    # Dibujar contorno principal y centroide
     cv2.drawContours(img, [main_contour], -1, (0,255,0), 3)
-    cv2.circle(img, (cx, cy), 5, (0,0,255), -1)  # centroide
+    cv2.circle(img, (cx, cy), 5, (0,0,255), -1)
 
     # Mostrar resultado
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     st.image(img_rgb, caption="Cortes de comida", use_column_width=True)
+
 
